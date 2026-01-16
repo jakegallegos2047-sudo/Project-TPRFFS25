@@ -1,0 +1,79 @@
+FS25_TreePaintRemover = {}
+local FS25_TreePaintRemover_mt = Class(FS25_TreePaintRemover, LandscapingTool)
+
+FS25_TreePaintRemover.MAX_BRUSH_RADIUS = 15        -- meters
+FS25_TreePaintRemover.BASE_COST_PER_SQM = 2        -- €/m²
+
+function FS25_TreePaintRemover.new(customMt)
+    local self = LandscapingTool.new(customMt or FS25_TreePaintRemover_mt)
+
+    self.name = "Tree Remover Brush"
+    self.iconFilename = Utils.getFilename("icons/treePaintRemover.dds", g_currentModDirectory)
+
+    self.removeTrees = true
+    self.removeStumps = true
+
+    self.pricePerSquareMeter = FS25_TreePaintRemover.BASE_COST_PER_SQM
+
+    return self
+end
+
+function FS25_TreePaintRemover.register()
+    local tool = FS25_TreePaintRemover.new()
+    g_landscapingManager:addTool(tool)
+end
+
+function FS25_TreePaintRemover:getMaxRadius()
+    return FS25_TreePaintRemover.MAX_BRUSH_RADIUS
+end
+
+function FS25_TreePaintRemover:getPrice(area)
+    return area * FS25_TreePaintRemover.BASE_COST_PER_SQM
+end
+
+function FS25_TreePaintRemover:applyArea(x, z, radius)
+    local treeSystem = g_currentMission.treeSystem
+    if treeSystem == nil then
+        return
+    end
+
+    local x1 = x - radius
+    local z1 = z - radius
+    local x2 = x + radius
+    local z2 = z + radius
+
+    if self.removeTrees then
+        treeSystem:removeTreesInArea(x1, z1, x2, z2)
+    end
+
+    if self.removeStumps then
+        treeSystem:removeStumpsInArea(x1, z1, x2, z2)
+    end
+end
+
+
+function FS25_TreePaintRemover:getSettings()
+    return {
+        {
+            name = "Remove Trees",
+            value = self.removeTrees,
+            callback = function(value)
+                self.removeTrees = value
+            end
+        },
+        {
+            name = "Remove Stumps",
+            value = self.removeStumps,
+            callback = function(value)
+                self.removeStumps = value
+            end
+        }
+    }
+end
+
+addModEventListener({
+    loadMap = function()
+        FS25_TreePaintRemover.register()
+        print("FS25 Tree Paint Remover loaded")
+    end
+})
