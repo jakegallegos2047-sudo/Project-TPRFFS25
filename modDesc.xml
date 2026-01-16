@@ -3,10 +3,11 @@
     <description>
         Landscaping brush that removes trees instead of painting terrain. I play heavily modded playthroughs with fields that are mid three figures in hectares. Sometimes that means there's hundreds of trees I need to remove and I got tired of using object hider or finding every file individually in the map files.
     </description>
-    <author>Right</author>
+    <author></author>
     <version>1.0.0.0</version>
 
     <scripts>
         <script file="scripts/TreePaintTool.lua"/>
     </scripts>
 </modDesc>
+
